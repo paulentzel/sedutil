@@ -31,7 +31,7 @@ This program and it's accompanying Pre-Boot Authorization image allow
 you to enable the locking in SED's that comply with the TCG OPAL 2.00
 standard, Opalite, Pyrite, and Ruby.   
 
-You must be administrator/root to run the host managment program
+You must be administrator/root to run the host management program
 
 In Linux libata.allow_tpm must be set to 1. Either via adding libata.allow_tpm=1 to the kernel flags at boot time 
 or changing the contents of /sys/module/libata/parameters/allow_tpm from a "0" to a "1" on a running system.
