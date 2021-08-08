@@ -660,6 +660,20 @@ typedef struct _IDENTIFY_RESPONSE {
     uint8_t modelNum[40];
 } IDENTIFY_RESPONSE;
 
+typedef struct _UASP_INQUIRY_RESPONSE {
+	uint8_t fill1[20];
+	char ProductSerial[20];
+	uint8_t fill2[6];
+	char ProductRev[8];
+	char ProductID[40];
+} UASP_INQUIRY_RESPONSE;
+
+typedef struct _SCSI_INQUIRY_RESPONSE {
+	uint8_t fill1[16];
+	char ProductID[16];
+	char ProductRev[4];
+} SCSI_INQUIRY_RESPONSE;
+
 // structures from T10 SFSC Standard
 #define SFSC_SUPPORTED_PROTOCOL_LIST    0x0000
 #define SFSC_CERTIFICATE_DATA           0x0001
