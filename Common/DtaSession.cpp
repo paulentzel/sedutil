@@ -299,7 +299,21 @@ DtaSession::sendCommand(DtaCommand * cmd, DtaResponse & response)
         LOG(E) << "method status code " <<
                 methodStatus(response.getUint8(response.getTokenCount() - 4));
     }
-    return response.getUint8(response.getTokenCount() - 4);
+
+	// Check for a CloseSession response (indicates session was aborted by TPer)
+	if (OPAL_TOKEN::CALL == token) {
+		uint8_t invokingUID[32];
+		uint8_t method[32];
+		if ((response.getBytes(1, invokingUID) == 8) &&
+		    (response.getBytes(2, method) == 8)) {
+			if ((memcmp(invokingUID, OPALUID[OPAL_UID::OPAL_SMUID_UID],     8) == 0) &&
+			    (memcmp(method,      OPALMETHOD[OPAL_METHOD::CLOSESESSION], 8) == 0)) {
+				return DTAERROR_SESSION_CLOSED;
+			}
+		}
+	}
+
+	return response.getUint8(response.getTokenCount() - 4);
 }
 
 void

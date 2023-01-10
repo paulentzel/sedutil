@@ -31,6 +31,8 @@ class DtaSession;
 
 using namespace std;
 
+typedef std::map<int, std::string> columnMap_t;
+
 typedef struct _tableDesc
 {
     const char* name;
@@ -40,7 +42,7 @@ typedef struct _tableDesc
     uint8_t     kind;
     uint8_t     skip;
     uint32_t    columnCount;
-    std::map<int, std::string> columns;
+    columnMap_t columns;
 } tableDesc_t;
 
 typedef std::map<uint32_t, std::string> rowMap_t;
