@@ -37,7 +37,7 @@ void usage()
     printf("-c=comID (optional)             select a comID value: offset from base, absolute, or dynamic\n");
     printf("                                examples: -c=+1 (offset), -c=0x1000 (absolute), -c=d (dynamic)\n");
     printf("-a=authortity (optional)        specify an authority instead of the default for the action\n");
-    printf("                                Authorities are Admin[1..n], User[1..n], SID\n");
+    printf("                                Authorities are Admin[1..n], User[1..n], Admins, SID, PSID, Anybody, or Anonymous\n");
     printf("                                This option is not supported for all actions.\n");
     printf("-t=timeout (optional)           specify a session timeout value to be sent with the Start Session\n");
     printf("-ds=x,y,z (optional)            specify datastore sizes for activate\n");

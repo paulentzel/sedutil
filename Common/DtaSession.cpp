@@ -122,7 +122,7 @@ again:
     cmd->addToken(105); // HostSessionID : sessionnumber
     cmd->addToken(SP); // SPID : SP
     cmd->addToken(d->useReadOnlySession ? OPAL_TINY_ATOM::UINT_00 : OPAL_TINY_ATOM::UINT_01); // ro/write
-	if ((NULL != HostChallenge) && (!d->isEprise())) {
+	if ((NULL != HostChallenge) && (!d->isEprise()) && (SignAuthority.size() != 0)) {
 		cmd->addToken(OPAL_TOKEN::STARTNAME);
 		cmd->addToken(OPAL_TINY_ATOM::UINT_00);
 		if (hashPwd) {
@@ -308,6 +308,7 @@ DtaSession::sendCommand(DtaCommand * cmd, DtaResponse & response)
 		    (response.getBytes(2, method) == 8)) {
 			if ((memcmp(invokingUID, OPALUID[OPAL_UID::OPAL_SMUID_UID],     8) == 0) &&
 			    (memcmp(method,      OPALMETHOD[OPAL_METHOD::CLOSESESSION], 8) == 0)) {
+				LOG(E) << "CloseSession response indicates the session was aborted by the Tper";
 				return DTAERROR_SESSION_CLOSED;
 			}
 		}
