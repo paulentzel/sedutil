@@ -475,6 +475,7 @@ public:
     bool useTransaction = false;
     bool useReadOnlySession = false;
     uint16_t ComIDValue = 0;
+    uint16_t ComIDExtentionValue = 0;
     ComIDOption_t ComIDOption = ComID_Base;
 
 protected:

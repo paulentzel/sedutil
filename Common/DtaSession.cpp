@@ -36,7 +36,7 @@ using namespace std;
 
 DtaSession::DtaSession(DtaDev * device)
 {
-    LOG(D1) << "Creating DtaSsession()";
+    LOG(D1) << "Creating DtaSession()";
     sessionauth = 0;
     d = device;
 
@@ -412,4 +412,8 @@ DtaSession::~DtaSession()
 			delete cmd;
 		}
     }
+
+	if (d->ComIDOption == ComID_DynamicAllocated) {
+		d->ComIDOption =  ComID_Dynamic;
+	}
 }

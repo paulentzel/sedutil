@@ -29,10 +29,11 @@ typedef enum _sedutiloutput {
 } sedutiloutput;
 
 typedef enum _ComIDOtions {
-    ComID_Base      = 0,
-    ComID_Select    = 1,
-    ComID_Offset    = 2,
-    ComID_Dynamic   = 3,
+    ComID_Base              = 0,
+    ComID_Select            = 1,
+    ComID_Offset            = 2,
+    ComID_Dynamic           = 3,
+    ComID_DynamicAllocated  = 4,
 } ComIDOption_t;
 
 /** Structure representing the command line issued to the program */

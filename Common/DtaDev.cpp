@@ -163,7 +163,18 @@ void DtaDev::GetExtendedComID(uint16_t* ComID, uint16_t* ComIDExtension)
             LOG(I) << "Dynamic ComID failed, using static";
             *ComID = comID();
             *ComIDExtension = 0;
+        } else {
+            ComIDOption = ComID_DynamicAllocated;
+            ComIDValue = *ComID;
+            ComIDExtentionValue = *ComIDExtension;
         }
+        break;
+
+    case ComID_DynamicAllocated:
+        *ComID = ComIDValue;
+        *ComIDExtension = ComIDExtentionValue;
+        LOG(D) << "Using already assigned ComID " << std::setfill('0') << std::setw(4) << std::hex << *ComID
+                                                  << std::setfill('0') << std::setw(4) << *ComIDExtension << std::dec;
         break;
     }
 }
@@ -243,6 +254,11 @@ uint8_t DtaDev::dynamicComID(uint16_t* ComID, uint16_t* ComIDExtension)
     IFLOG(D3) DtaHexDump(bufferPtr, 4);
 
     uint32_t returnedComID = SWAP32(*(static_cast<uint32_t *>(bufferPtr)));
+
+    if (returnedComID == 0) {
+        LOG(W) << "GET_COMID returned 0";
+        return 1;
+    }
 
     *ComID          = (returnedComID >> 16) & 0xffff;
     *ComIDExtension = returnedComID & 0xffff;
