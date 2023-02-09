@@ -243,11 +243,11 @@ uint8_t DtaDevOpal::listLockingRanges(const char* authority, const char* passwor
             for (int i = 0; i < 8; i++) {
                     table.push_back(OPALUID[OPAL_UID::OPAL_LOCKING_INFO_TABLE][i]);
             }
-            if ((lastRC = getTable(table, _OPAL_TOKEN::MAXRANGES, _OPAL_TOKEN::MAXRANGES)) != 0) {
+            if ((lastRC = getTable(table, OPAL_TOKEN::MAXRANGES, OPAL_TOKEN::MAXRANGES)) != 0) {
                     delete session;
                     return lastRC;
             }
-            if (response.tokenIs(4) != _OPAL_TOKEN::DTA_TOKENID_UINT) {
+            if (response.tokenIs(4) != OPAL_TOKEN::DTA_TOKENID_UINT) {
                     LOG(E) << "Unable to determine number of ranges ";
                     delete session;
                     return DTAERROR_NO_LOCKING_INFO;
@@ -257,6 +257,56 @@ uint8_t DtaDevOpal::listLockingRanges(const char* authority, const char* passwor
         }
 
         LOG(I) << "Locking Range Configuration for " << dev;
+
+	if (disk_info.SingleUser_any) {
+		// At least one locking range is in single-user mode.  Pull the list and show the ones that are.
+		std::vector<uint8_t> table;
+		table.push_back(OPAL_SHORT_ATOM::BYTESTRING8);
+		for (int i = 0; i < 8; i++) {
+			table.push_back(OPALUID[OPAL_UID::OPAL_LOCKING_TABLE][i]);
+		}
+		if ((lastRC = getTable(table, (uint32_t)OPAL_TOKEN::SUM_RANGES,
+							          (uint32_t)OPAL_TOKEN::SUM_RANGES)) == 0) {
+			if ((response.tokenIs(2) == OPAL_TOKEN::STARTNAME) &&
+			    (response.getUint32(3) == OPAL_TOKEN::SUM_RANGES)) {
+				if (response.tokenIs(4) == OPAL_TOKEN::STARTLIST) {
+					// SingleUserModeRanges is a list of UIDs
+					int tokenCount = response.getTokenCount();
+					bool firstRange = true;
+
+					for (int t = 5; t < tokenCount; t++) {
+						uint8_t uid[8];
+						if (response.tokenIs(t) != OPAL_TOKEN::DTA_TOKENID_BYTESTRING) {
+							break;
+						}
+						response.getBytes(t, uid);
+						uint32_t lr = (uid[6] << 8) + uid[7];
+						if ((lr == (uint32_t)rangeid) || (rangeid == (uint16_t)-1)) {
+							char uidStr[20];
+							printBytes(uid, 8, uidStr);
+							if (firstRange) {
+								LOG(I) << "The following locking ranges are listed as single-user mode:";
+								firstRange = false;
+							}
+							LOG(I) << "  Locking Range UID: " << uidStr << " (LR" << lr << ")";
+						}
+					}
+				} else {
+					// SingleUserModeList is a single UID (should be Locking Table UID)
+					if (response.tokenIs(4) == OPAL_TOKEN::DTA_TOKENID_BYTESTRING) {
+						uint8_t uid[8];
+						response.getBytes(4, uid);
+						char uidStr[20];
+						printBytes(uid, 8, uidStr);
+						LOG(I) << "Single User mode for UID: " << uidStr;
+					}
+				}
+			} else {
+				LOG(I) << "Single User mode reported enabled, but no locking ranges reported in single user mode.";
+			}
+		}
+	}
+
 	for (int i = firstRange; i <= lastRange; i++){
 		if(0 != i) {
                     LR[6] = 0x03;  // non global ranges are 00000802000300nn
@@ -337,40 +387,6 @@ uint8_t DtaDevOpal::listLockingRanges(const char* authority, const char* passwor
 			          "  RLocked = " << rl << "  WLocked = " << wl << resets;
         LOG(I) << "    NamespaceID = " << ns << "  Global = " << global;
 	}
-
-#if 0
-	if (disk_info.SingleUser_any) {
-		// At least one locking range is in single-user mode.  Pull the list and show the ones that are.
-		std::vector<uint8_t> table;
-		table.push_back(OPAL_SHORT_ATOM::BYTESTRING8);
-		for (int i = 0; i < 8; i++) {
-			table.push_back(OPALUID[OPAL_UID::OPAL_LOCKING_TABLE][i]);
-		}
-		if ((lastRC = getTable(table, (uint32_t)0x60000, (uint32_t)0x60000)) == 0) {
-			if ((response.tokenIs(2) == OPAL_TOKEN::STARTNAME) &&
-			    (response.getUint32(3) == 0x60000) &&
-			    (response.tokenIs(4) == OPAL_TOKEN::STARTLIST)) {
-				int tokenCount = response.getTokenCount();
-				bool firstRange = true;
-
-				for (int t = 5; t < tokenCount; t++) {
-					uint8_t uid[8];
-					response.getBytes(t, uid);
-					uint32_t lr = (uid[6] << 8) + uid[7];
-					if ((lr == (uint32_t)rangeid) || (rangeid == (uint16_t)-1)) {
-						char uidStr[20];
-						printBytes(uid, 8, uidStr);
-						if (firstRange) {
-							LOG(I) << "The following locking ranges are listed as single-user mode:";
-							firstRange = false;
-						}
-						LOG(I) << "Locking Range UID: " << uidStr << " (LR" << lr << ")";
-					}
-				}
-			}
-		}
-	}
-#endif
 
 	delete session;
 	LOG(D1) << "Exiting DtaDevOpal:listLockingRanges()";
