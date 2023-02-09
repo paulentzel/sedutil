@@ -1059,7 +1059,10 @@ uint8_t DtaDevOpal::getAuth4User(const OPAL_UID sp, const char* userid, const ui
 	else
 		userData.push_back(0x09);
 
-    if (!memcmp("Anybody", userid, 7)) {
+    if (!memcmp("Anonymous", userid, 9) || !memcmp("anonymous", userid, 9)) {
+        userData.clear();
+    }
+    else if (!memcmp("Anybody", userid, 7) || !memcmp("anybody", userid, 7)) {
         userData.push_back(0x00);
         userData.push_back(0x00);
         userData.push_back(0x00);

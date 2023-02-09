@@ -201,12 +201,12 @@ int main(int argc, char * argv[])
                                      argv[opts.password], -1));
 		break;
 	case sedutiloption::listLockingRange:
-		LOG(D) << "List Locking Range[" << opts.lockingrange << "]";
+		LOG(D) << "List Locking Range[" << (int)opts.lockingrange << "]";
 		return (d->listLockingRanges(opts.authority[0] ? opts.authority : "Admin1",
                                      argv[opts.password], opts.lockingrange));
 		break;
     case sedutiloption::rekeyLockingRange:
-		LOG(D) << "Rekey Locking Range[" << opts.lockingrange << "]";
+		LOG(D) << "Rekey Locking Range[" << (int)opts.lockingrange << "]";
 		return (d->rekeyLockingRange(opts.lockingrange, opts.authority[0] ? opts.authority : "Admin1",
                                      argv[opts.password]));
         break;
