@@ -263,7 +263,7 @@ uint8_t DtaDevOpal::listLockingRanges(const char* authority, const char* passwor
 		std::vector<uint8_t> table;
 		table.push_back(OPAL_SHORT_ATOM::BYTESTRING8);
 		for (int i = 0; i < 8; i++) {
-			table.push_back(OPALUID[OPAL_UID::OPAL_LOCKING_TABLE][i]);
+			table.push_back(OPALUID[OPAL_UID::OPAL_LOCKING_INFO_TABLE][i]);
 		}
 		if ((lastRC = getTable(table, (uint32_t)OPAL_TOKEN::SUM_RANGES,
 							          (uint32_t)OPAL_TOKEN::SUM_RANGES)) == 0) {
@@ -280,8 +280,11 @@ uint8_t DtaDevOpal::listLockingRanges(const char* authority, const char* passwor
 							break;
 						}
 						response.getBytes(t, uid);
-						uint32_t lr = (uid[6] << 8) + uid[7];
-						if ((lr == (uint32_t)rangeid) || (rangeid == (uint16_t)-1)) {
+						uint32_t lr = ((uint32_t)uid[6] << 8) + (uint32_t)uid[7];
+						if ((uid[5] == 0x00) && (lr == 1)) {
+							lr = 0;
+						}
+						if ((lr == (uint32_t)rangeid) || (rangeid == -1)) {
 							char uidStr[20];
 							printBytes(uid, 8, uidStr);
 							if (firstRange) {
