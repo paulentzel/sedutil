@@ -97,6 +97,9 @@ public:
 
     uint8_t dynamicComID(uint16_t* ComID, uint16_t* ComIDExtension);
 
+    void tokenizeUID(vector<uint8_t> & v, const uint8_t value[8]);
+    void tokenizeUID(vector<uint8_t> & v, const OPAL_UID uid);
+
 	/*
 	 * virtual methods required in the OS specific
 	 * device class

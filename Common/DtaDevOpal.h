@@ -423,4 +423,6 @@ protected:
 
 private:
 	uint8_t getTableWriteGranularity(std::vector<uint8_t>& tableRowUID, uint32_t* gran);
+
+	void tokenizeLockingRangeUID(std::vector<uint8_t>& v, uint8_t lockingRange);
 };

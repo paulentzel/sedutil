@@ -140,6 +140,21 @@ DTA_DEVICE_TYPE DtaDev::getDevType() const
     return disk_info.devType;
 }
 
+void DtaDev::tokenizeUID(vector<uint8_t> & v, const uint8_t value[8])
+{
+	v.clear();
+	v.push_back(OPAL_SHORT_ATOM::BYTESTRING8);
+	for (int i = 0; i < 8; i++)
+    {
+		v.push_back(value[i]);
+	}
+}
+
+void DtaDev::tokenizeUID(vector<uint8_t> & v, const OPAL_UID uid)
+{
+    tokenizeUID(v, OPALUID[uid]);
+}
+
 void DtaDev::GetExtendedComID(uint16_t* ComID, uint16_t* ComIDExtension)
 {
     switch (ComIDOption) {
