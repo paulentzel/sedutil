@@ -3706,12 +3706,13 @@ const tableDesc_t VUFeatureLockingTableDesc =
     { 0xFF, 0xFF, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01 },
     1,
     0,                  // skip
-    4,
+    5,
     {
         { 0, "UID" },
         { 1, "FWDownload" },
         { 2, "VUCommands" },
-        { 3, "MinFeatures" }
+        { 3, "MinFeatures" },
+        { 4, "RDYHoldoffEnable" },
     }
 };
 
