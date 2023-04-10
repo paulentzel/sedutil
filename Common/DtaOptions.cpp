@@ -265,6 +265,7 @@ uint8_t DtaOptions(int argc, char * argv[], DTA_OPTIONS * opts)
         }
         else if (!strncmp("-t=", argv[i], 3)) {
             ++baseOptions;
+            opts->useSessionTimeout = true;
             opts->timeout = atoi(&argv[i][3]);
             LOG(D) << "session timeout set to " << opts->timeout;
         }

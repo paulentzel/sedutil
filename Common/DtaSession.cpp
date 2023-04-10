@@ -148,7 +148,7 @@ again:
 		cmd->addToken(60000);
 		cmd->addToken(OPAL_TOKEN::ENDNAME);
 	}
-    else if (d->timeout) {
+    else if (d->useSessionTimeout) {
 		cmd->addToken(OPAL_TOKEN::STARTNAME);
 		cmd->addToken(OPAL_TINY_ATOM::UINT_05);
 		cmd->addToken(d->timeout);

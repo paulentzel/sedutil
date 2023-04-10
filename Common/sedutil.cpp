@@ -112,6 +112,7 @@ int main(int argc, char * argv[])
         d->testOversizePacket = opts.testOversizePacket;
         d->useTransaction     = opts.useTransaction;
         d->useReadOnlySession = opts.useReadOnlySession;
+        d->useSessionTimeout  = opts.useSessionTimeout;
         d->sendRetries        = opts.sendRetries;
     }
 

@@ -63,6 +63,7 @@ typedef struct _DTA_OPTIONS {
 	bool    no_hash_passwords; /** global parameter, disables hashing of passwords */
     bool    useTransaction;
     bool    useReadOnlySession;
+    bool    useSessionTimeout;
     char    authority[16];  /** authority over-ride */
     char    sp[16];         /** security protocol */
     uint32_t timeout;       /** session timeout option */
