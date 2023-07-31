@@ -42,6 +42,7 @@ void usage()
     printf("-t=timeout (optional)           specify a session timeout value to be sent with the Start Session\n");
     printf("-ds=x,y,z (optional)            specify datastore sizes for activate\n");
     printf("-sp=sp (optional)               specify a security protocol to access, Admin or Locking\n");
+    printf("-o=output_file                  specify the results be sent to a file (readDataStore and readMBR only)\n");
     printf("\n");
     printf("actions:\n");
     printf("--scan\n");
@@ -284,6 +285,10 @@ uint8_t DtaOptions(int argc, char * argv[], DTA_OPTIONS * opts)
                     return DTAERROR_INVALID_COMMAND;
                 }
             }
+        }
+        else if (!strncmp("-o=", argv[i], 3)) {
+          ++baseOptions;
+          opts->outputFilePtr = argv[i] + 3;
         }
         else if (!strncmp("-mt=", argv[i], 4)) {
             ++baseOptions;

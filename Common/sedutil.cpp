@@ -114,6 +114,7 @@ int main(int argc, char * argv[])
         d->useReadOnlySession = opts.useReadOnlySession;
         d->useSessionTimeout  = opts.useSessionTimeout;
         d->sendRetries        = opts.sendRetries;
+        d->outputFileName     = opts.outputFilePtr;
     }
 
     char* end;

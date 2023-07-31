@@ -71,6 +71,7 @@ typedef struct _DTA_OPTIONS {
     uint32_t sendRetries;
     uint32_t datastoreCount;
     uint32_t datastoreSizes[16];
+    char *   outputFilePtr;
 	sedutiloutput output_format;
 } DTA_OPTIONS;
 

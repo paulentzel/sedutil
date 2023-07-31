@@ -23,6 +23,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include "DtaOptions.h"
 #include "DtaResponse.h"
+#include <fstream>
 
 #ifndef MIN
 #define MIN(a,b) (((a)<(b))?(a):(b))
@@ -465,6 +466,10 @@ public:
 
     void GetExtendedComID(uint16_t* ComID, uint16_t* ComIDExtension);
 
+    void OpenOutputFile();
+    void CloseOutputFile();
+    void SendToOutputFile(const uint8_t* data, const int count);
+
 	bool no_hash_passwords; /** disables hashing of passwords */
 	sedutiloutput output_format; /** standard, readable, JSON */
     uint32_t timeout = 0;   /** Session timeout, 0 is no timeout */
@@ -478,6 +483,8 @@ public:
     uint16_t ComIDValue = 0;
     uint16_t ComIDExtentionValue = 0;
     ComIDOption_t ComIDOption = ComID_Base;
+    char * outputFileName = NULL;
+    std::ofstream outputStream;
 
 protected:
 	const char * dev;   /**< character string representing the device in the OS lexicon */
