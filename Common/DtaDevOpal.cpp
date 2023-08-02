@@ -1793,7 +1793,11 @@ uint8_t DtaDevOpal::readMBR(const char* password, const uint32_t offset, const u
             break;
         }
 
-        DtaHexDump(buffer, chunkSize);
+        if (outputFileName == NULL) {
+            DtaHexDump(buffer, chunkSize);
+        } else {
+            SendToOutputFile(buffer, chunkSize);
+        }
     }
 
     delete session;
@@ -2000,7 +2004,11 @@ uint8_t DtaDevOpal::readDataStore(const char* password, const uint8_t table, con
             break;
         }
 
-        DtaHexDump(buffer, chunkSize);
+        if (outputFileName == NULL) {
+            DtaHexDump(buffer, chunkSize);
+        } else {
+            SendToOutputFile(buffer, chunkSize);
+        }
     }
 
     delete session;

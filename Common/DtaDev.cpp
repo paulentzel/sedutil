@@ -49,6 +49,7 @@ DtaDev::DtaDev() :
 
 DtaDev::~DtaDev()
 {
+    CloseOutputFile();
 }
 
 uint8_t DtaDev::isRuby1() const
@@ -689,4 +690,36 @@ void DtaDev::printSecurityCompliance()
         return;
     }
     cout << "FIPS descriptor not found" << std::endl;
+}
+
+void DtaDev::OpenOutputFile()
+{
+    if (outputFileName != NULL) {
+         outputStream.open(outputFileName, std::ios::binary | std::ios::out);
+         if (!outputStream.is_open()) {
+             cout << "Error opening output file " << outputFileName << std::endl;
+         }
+    }
+}
+
+void DtaDev::CloseOutputFile()
+{
+    if (outputStream.is_open()) {
+        outputStream.close();
+    }
+}
+
+void DtaDev::SendToOutputFile(const uint8_t* data, const int count)
+{
+    if (!outputStream.is_open()) {
+        OpenOutputFile();
+    }
+
+    if (outputStream.is_open()) {
+        outputStream.write((const char*)data, count);
+        outputStream.flush();
+//        cout << "Write " << count << " bytes to file " << outputFileName << std::endl;
+    } else {
+        cout << "SendToOutputFile: outputStream failed to open\n";
+    }
 }
