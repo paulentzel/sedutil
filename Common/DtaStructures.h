@@ -25,6 +25,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #define FC_LOCKING    0x0002	/* Locking */
 #define FC_GEOMETRY   0x0003	/* Geometry Reporting */
 #define FC_SECUREMSG  0x0004	/* Secure Messaging */
+#define FC_SIIS       0x0005    /* SIIS */
 #define FC_ENTERPRISE 0x0100	/* Enterprise SSC */
 #define FC_OPALV100   0x0200	/* Opal SSC V1.00 */
 #define FC_SINGLEUSER 0x0201	/* Single User Mode */
@@ -175,6 +176,28 @@ typedef struct _Discovery0SecureMsgFeatures {
     uint8_t reserved02[3];
     uint16_t numberOfSPs;
 } Discovery0SecureMsgFeatures;
+
+/** OPAL Configurable Namespace Locking Feature (CNL)
+ */
+typedef struct _Discovery0SIIS {
+    uint16_t featureCode; /* 0x0005 */
+    uint8_t minor_version : 4;
+    uint8_t version       : 4;
+    uint8_t length;
+
+    uint8_t SIIS_Revision;
+
+    /* big endian
+    uint8_t reserved05            : 5;
+    uint8_t IdentifierUsageScope  : 2;
+    uint8_t KeyChangeZoneBehavior : 1;
+     */
+    uint8_t KeyChangeZoneBehavior : 1;
+    uint8_t IdentifierUsageScope  : 2;
+    uint8_t reserved05            : 5;
+
+    uint8_t reserved06[10];
+} Discovery0SIIS;
 
 /** Enterprise SSC Feature 
  */
@@ -424,6 +447,7 @@ union Discovery0Features {
     Discovery0LockingFeatures locking;
     Discovery0GeometryFeatures geometry;
     Discovery0SecureMsgFeatures secureMsg;
+    Discovery0SIIS siis;
     Discovery0EnterpriseSSC enterpriseSSC;
     Discovery0SingleUserMode singleUserMode;
     Discovery0OPALV200 opalv200;
@@ -496,6 +520,7 @@ typedef struct _OPAL_DiskInfo {
     uint8_t Locking : 1;
     uint8_t Geometry : 1;
     uint8_t SecureMsg : 1;
+    uint8_t SIIS : 1;
     uint8_t Enterprise : 1;
     uint8_t SingleUser : 1;
     uint8_t DataStore : 1;
@@ -531,6 +556,9 @@ typedef struct _OPAL_DiskInfo {
     uint64_t Geometry_lowestAlignedLBA;
     uint8_t SecureMsg_activated : 1;
     uint16_t SecureMsg_numberOfSPs;
+    uint8_t SIIS_Revision;
+    uint8_t SIIS_KeyChangeZoneBehavior : 1;
+    uint8_t SIIS_IdentifierUsageScope  : 2;
     uint8_t Enterprise_rangeCrossing : 1;
     uint16_t Enterprise_basecomID;
     uint16_t Enterprise_numcomID;
