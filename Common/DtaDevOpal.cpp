@@ -1222,28 +1222,60 @@ uint8_t DtaDevOpal::setNewPassword_SUM(const char* password, const char* userid,
 uint8_t DtaDevOpal::setMBREnable(const uint8_t mbrstate, const char* Admin1Password)
 {
 	LOG(D1) << "Entering DtaDevOpal::setMBREnable";
-	uint8_t lastRC;
-        // set MBRDone before changing MBREnable so the PBA isn't presented
-        if ((lastRC = setMBRDone(1, Admin1Password)) != 0){
-		LOG(E) << "unable to set MBRDone";
-                return lastRC;
-        }
+	uint8_t lastRC = 0;
+
 	if (mbrstate) {
-		if ((lastRC = setLockingSPvalue(OPAL_UID::OPAL_MBRCONTROL, OPAL_TOKEN::MBRENABLE,
-			OPAL_TOKEN::OPAL_TRUE, Admin1Password, NULL)) != 0) {
-			LOG(E) << "Unable to set setMBREnable on";
+		// Setting MBR Enable.  Set MBR Done in the same command.
+		session = new DtaSession(this);
+		if (NULL == session) {
+			LOG(E) << "Unable to create session object";
+			return DTAERROR_OBJECT_CREATE_FAILED;
+		}
+		if ((lastRC = session->start(OPAL_UID::OPAL_LOCKINGSP_UID, Admin1Password, OPAL_UID::OPAL_ADMIN1_UID)) != 0) {
+			delete session;
 			return lastRC;
+		}
+
+		DtaCommand *cmd = new DtaCommand();
+		if (NULL == cmd) {
+			LOG(E) << "Unable to create command object";
+			delete session;
+			return DTAERROR_OBJECT_CREATE_FAILED;
+		}
+
+		cmd->reset(OPAL_UID::OPAL_MBRCONTROL, OPAL_METHOD::SET);
+		cmd->addToken(OPAL_TOKEN::STARTLIST);
+			cmd->addToken(OPAL_TOKEN::STARTNAME);
+			cmd->addToken(OPAL_TOKEN::VALUES);
+			cmd->addToken(OPAL_TOKEN::STARTLIST);
+				cmd->addToken(OPAL_TOKEN::STARTNAME);
+				cmd->addToken(OPAL_TOKEN::MBRENABLE);
+				cmd->addToken(OPAL_TOKEN::OPAL_TRUE);
+				cmd->addToken(OPAL_TOKEN::ENDNAME);
+				cmd->addToken(OPAL_TOKEN::STARTNAME);
+				cmd->addToken(OPAL_TOKEN::MBRDONE);
+				cmd->addToken(OPAL_TOKEN::OPAL_TRUE);
+				cmd->addToken(OPAL_TOKEN::ENDNAME);
+			cmd->addToken(OPAL_TOKEN::ENDLIST);
+			cmd->addToken(OPAL_TOKEN::ENDNAME);
+		cmd->addToken(OPAL_TOKEN::ENDLIST);
+		cmd->complete();
+
+		if ((lastRC = session->sendCommand(cmd, response)) != 0) {
+			LOG(E) << "Unable to set setMBREnable on ";
 		}
 		else {
 			LOG(I) << "MBREnable set on ";
 		}
+		delete cmd;
+		delete session;
 	}
 	else {
+		// Clearing MBR Enable
 		if ((lastRC = setLockingSPvalue(OPAL_UID::OPAL_MBRCONTROL, OPAL_TOKEN::MBRENABLE,
-				OPAL_TOKEN::OPAL_FALSE, Admin1Password, NULL)) != 0) {
-				LOG(E) << "Unable to set setMBREnable off";
-				return lastRC;
-			}
+			OPAL_TOKEN::OPAL_FALSE, Admin1Password, NULL)) != 0) {
+			LOG(E) << "Unable to set setMBREnable off ";
+		}
 		else {
 			LOG(I) << "MBREnable set off ";
 		}
@@ -1277,7 +1309,7 @@ uint8_t DtaDevOpal::setMBRDone(const uint8_t mbrstate, const char* Admin1Passwor
 		}
 	}
 	LOG(D1) << "Exiting DtaDevOpal::setMBRDone";
-	return 0;
+	return lastRC;
 }
 
 uint8_t DtaDevOpal::setLockingRange(const uint8_t lockingrange, const uint8_t lockingstate,
@@ -2650,6 +2682,48 @@ uint8_t DtaDevOpal::enableTperReset(const char* password, const uint8_t options)
 
 	delete session;
 	LOG(D1) << "Exiting DtaDevOpal::enableTperReset";
+	return lastRC;
+}
+
+uint8_t DtaDevOpal::clearDoneOnReset(const char* authority, const char* password, const uint8_t options)
+{
+	LOG(D1) << "Entering DtaDevOpal::clearDoneOnReset";
+	uint8_t lastRC;
+
+    vector<uint8_t> authorityUID;
+    if ((lastRC = getAuth4User(OPAL_UID::OPAL_LOCKINGSP_UID, authority, 0, authorityUID)) != 0) {
+        LOG(E) << "Invalid Authority provided " << authority;
+        return lastRC;
+    }
+
+	vector<uint8_t> table;
+	table. push_back(OPAL_SHORT_ATOM::BYTESTRING8);
+	for (int i = 0; i < 8; i++) {
+		table.push_back(OPALUID[OPAL_MBRCONTROL][i]);
+	}
+
+	vector<uint8_t> column_list;
+    column_list.push_back(OPAL_TOKEN::STARTLIST);
+    column_list.push_back(OPAL_TOKEN::POWER_CYCLE);
+    if (options == OPAL_LOCKINGSTATE::ENABLERESET) {
+        column_list.push_back(OPAL_TOKEN::PROGRAMMATIC);
+    }
+    column_list.push_back(OPAL_TOKEN::ENDLIST);
+
+	session = new DtaSession(this);
+	if (NULL == session) {
+		LOG(E) << "Unable to create session object ";
+		return DTAERROR_OBJECT_CREATE_FAILED;
+	}
+
+	if ((lastRC = session->start(OPAL_UID::OPAL_LOCKINGSP_UID, password, OPAL_UID::OPAL_ADMIN1_UID)) == 0) {
+        if ((lastRC = setTable(table, OPAL_TOKEN::MBRDONEONRESET, column_list)) != 0) {
+            LOG(E) << "Unable to update the MBR Control table";
+        }
+	}
+
+	delete session;
+	LOG(D1) << "Exiting DtaDevOpal::clearDoneOnReset";
 	return lastRC;
 }
 

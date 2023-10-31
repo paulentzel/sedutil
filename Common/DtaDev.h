@@ -417,6 +417,13 @@ public:
      */
     virtual uint8_t enableTperReset(const char* password, const uint8_t options) = 0;
 
+    /** Enables or disables Programmic Reset in the MBR Control table as defined in TCG Opal specification
+     * @param authority authority to use
+     * @param password LockingSP Admin1 password
+     * @param options enable or disable
+     */
+    virtual uint8_t clearDoneOnReset(const char* authority, const char* password, const uint8_t options) = 0;
+
     /** Get an ACE table entry booelan expression column value and print it
      * @param sp - security protocol
      * @param auth - authority to use
