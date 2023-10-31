@@ -25,6 +25,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #define FC_LOCKING    0x0002	/* Locking */
 #define FC_GEOMETRY   0x0003	/* Geometry Reporting */
 #define FC_SECUREMSG  0x0004	/* Secure Messaging */
+#define FC_SIIS       0x0005    /* SIIS */
 #define FC_ENTERPRISE 0x0100	/* Enterprise SSC */
 #define FC_OPALV100   0x0200	/* Opal SSC V1.00 */
 #define FC_SINGLEUSER 0x0201	/* Single User Mode */
@@ -39,6 +40,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #define FC_CNL        0x0403	/* Configurable Namespace Locking*/
 #define FC_DATAREM    0x0404	/* Supported Data Removal Mechanism */
 #define FC_NSGEOMETRY 0x0405	/* Namespace Geometry Reporting */
+#define FC_MBRFORMNS  0x0407    /* Shadow MBR for Multiple Namespaces */
 
 /** STACK_RESET Request
  */
@@ -175,6 +177,28 @@ typedef struct _Discovery0SecureMsgFeatures {
     uint8_t reserved02[3];
     uint16_t numberOfSPs;
 } Discovery0SecureMsgFeatures;
+
+/** OPAL Configurable Namespace Locking Feature (CNL)
+ */
+typedef struct _Discovery0SIIS {
+    uint16_t featureCode; /* 0x0005 */
+    uint8_t minor_version : 4;
+    uint8_t version       : 4;
+    uint8_t length;
+
+    uint8_t SIIS_Revision;
+
+    /* big endian
+    uint8_t reserved05            : 5;
+    uint8_t IdentifierUsageScope  : 2;
+    uint8_t KeyChangeZoneBehavior : 1;
+     */
+    uint8_t KeyChangeZoneBehavior : 1;
+    uint8_t IdentifierUsageScope  : 2;
+    uint8_t reserved05            : 5;
+
+    uint8_t reserved06[10];
+} Discovery0SIIS;
 
 /** Enterprise SSC Feature 
  */
@@ -418,12 +442,25 @@ typedef struct _Discovery0DataRem {
 	uint8_t reserved02[16];
 } Discovery0DataRem;
 
+/** Shadow MBR for Multiple Namespaces
+ */
+typedef struct _Discover0MBRForMultiNS {
+	uint16_t featureCode;           /* 0x0407 */
+	uint8_t minor_version   : 4;
+	uint8_t version         : 4;
+	uint8_t length;
+    uint8_t ans_c           : 1;
+    uint8_t reserved04      : 7;
+    uint8_t reserved05[11];
+} Discover0MBRForMultiNS;
+
 /** Union of features used to parse the discovery 0 response */
 union Discovery0Features {
     Discovery0TPerFeatures TPer;
     Discovery0LockingFeatures locking;
     Discovery0GeometryFeatures geometry;
     Discovery0SecureMsgFeatures secureMsg;
+    Discovery0SIIS siis;
     Discovery0EnterpriseSSC enterpriseSSC;
     Discovery0SingleUserMode singleUserMode;
     Discovery0OPALV200 opalv200;
@@ -437,6 +474,7 @@ union Discovery0Features {
 	Discovery0Ruby10 ruby10;
 	Discovery0DataRem dataRem;
 	Discovery0GeometryFeatures nsgeometry;
+    Discover0MBRForMultiNS mbrForMNS;
 };
 
 /** ComPacket (header) for transmissions. */
@@ -496,6 +534,7 @@ typedef struct _OPAL_DiskInfo {
     uint8_t Locking : 1;
     uint8_t Geometry : 1;
     uint8_t SecureMsg : 1;
+    uint8_t SIIS : 1;
     uint8_t Enterprise : 1;
     uint8_t SingleUser : 1;
     uint8_t DataStore : 1;
@@ -511,6 +550,7 @@ typedef struct _OPAL_DiskInfo {
 	uint8_t Pyrite20 : 1;
 	uint8_t Ruby10 : 1;
 	uint8_t DataRem : 1;
+    uint8_t MBRforMNS : 1;
     // values ONLY VALID IF FUNCTION ABOVE IS TRUE!!!!!
     uint8_t TPer_ACKNACK : 1;
     uint8_t TPer_async : 1;
@@ -531,6 +571,9 @@ typedef struct _OPAL_DiskInfo {
     uint64_t Geometry_lowestAlignedLBA;
     uint8_t SecureMsg_activated : 1;
     uint16_t SecureMsg_numberOfSPs;
+    uint8_t SIIS_Revision;
+    uint8_t SIIS_KeyChangeZoneBehavior : 1;
+    uint8_t SIIS_IdentifierUsageScope  : 2;
     uint8_t Enterprise_rangeCrossing : 1;
     uint16_t Enterprise_basecomID;
     uint16_t Enterprise_numcomID;
@@ -594,6 +637,8 @@ typedef struct _OPAL_DiskInfo {
     uint32_t NSGeometry_logicalBlockSize;
     uint64_t NSGeometry_alignmentGranularity;
     uint64_t NSGeometry_lowestAlignedLBA;
+    uint8_t MBRforMNS_version;
+    uint8_t MBRforMNS_ANS_C : 1;
     // IDENTIFY information
     DTA_DEVICE_TYPE devType;
     uint8_t serialNum[20];

@@ -333,6 +333,12 @@ void DtaDev::discovery0()
             disk_info.SecureMsg_activated = body->secureMsg.activated;
             disk_info.SecureMsg_numberOfSPs = SWAP16(body->secureMsg.numberOfSPs);
             break;
+        case FC_SIIS: /* SIIS */
+            disk_info.SIIS = 1;
+            disk_info.SIIS_Revision              = body->siis.SIIS_Revision;
+            disk_info.SIIS_KeyChangeZoneBehavior = body->siis.KeyChangeZoneBehavior;
+            disk_info.SIIS_IdentifierUsageScope  = body->siis.IdentifierUsageScope;
+            break;
         case FC_ENTERPRISE: /* Enterprise SSC */
             disk_info.Enterprise = 1;
 			disk_info.ANY_OPAL_SSC = 1;
@@ -443,6 +449,11 @@ void DtaDev::discovery0()
             disk_info.NSGeometry_logicalBlockSize = SWAP32(body->geometry.logicalBlockSize);
             disk_info.NSGeometry_lowestAlignedLBA = SWAP64(body->geometry.lowestAlighedLBA);
             break;
+        case FC_MBRFORMNS:
+            disk_info.MBRforMNS = 1;
+            disk_info.MBRforMNS_version = body->mbrForMNS.version;
+            disk_info.MBRforMNS_ANS_C = body->mbrForMNS.ans_c;
+            break;
         default:
 			if (0xbfff < (SWAP16(body->TPer.featureCode))) {
 				// silently ignore vendor specific segments as there is no public doc on them
@@ -513,7 +524,13 @@ void DtaDev::puke()
 			<< "Number of SPs = " << disk_info.SecureMsg_numberOfSPs
 			<< std::endl;
 	}
-	if (disk_info.Enterprise) {
+    if (disk_info.SIIS) {
+        cout << "SIIS Descriptor (" << HEXON(4) << FC_SIIS << HEXOFF << ")" << std::endl;
+        cout << "    SIIS Revision = " << HEXON(2) << (int)disk_info.SIIS_Revision << HEXOFF
+             << ", Key Change Zone Behavior = " << (int)disk_info.SIIS_KeyChangeZoneBehavior
+             << ", Identifier Usage Scope = " << (int)disk_info.SIIS_IdentifierUsageScope << std::endl;
+    }
+    if (disk_info.Enterprise) {
 		cout << "Enterprise function (" << HEXON(4) << FC_ENTERPRISE << HEXOFF << ")" << std::endl;
 		cout << "    Range crossing = " << (disk_info.Enterprise_rangeCrossing ? "Y, " : "N, ")
 			<< "Base comID = " << HEXON(4) << disk_info.Enterprise_basecomID
@@ -640,7 +657,12 @@ void DtaDev::puke()
 			<< ", Lowest Aligned LBA = " << disk_info.NSGeometry_lowestAlignedLBA
 			<< std::endl;
 	}
-	if (disk_info.Unknown)
+    if (disk_info.MBRforMNS) {
+        cout << "Shadow MBR for Multiple Namespaces feature (" << HEXON(4) << FC_MBRFORMNS << ")" << HEXOFF
+             << "version = " << disk_info.MBRforMNS_version << std::endl;
+        cout << "All Namespace Capable = " << (int)disk_info.MBRforMNS_ANS_C << std::endl;
+    }
+    if (disk_info.Unknown)
 		cout << "**** " << (uint16_t)disk_info.Unknown << " **** Unknown function codes IGNORED " << std::endl;
 }
 
