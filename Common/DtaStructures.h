@@ -40,6 +40,7 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #define FC_CNL        0x0403	/* Configurable Namespace Locking*/
 #define FC_DATAREM    0x0404	/* Supported Data Removal Mechanism */
 #define FC_NSGEOMETRY 0x0405	/* Namespace Geometry Reporting */
+#define FC_MBRFORMNS  0x0407    /* Shadow MBR for Multiple Namespaces */
 
 /** STACK_RESET Request
  */
@@ -441,6 +442,18 @@ typedef struct _Discovery0DataRem {
 	uint8_t reserved02[16];
 } Discovery0DataRem;
 
+/** Shadow MBR for Multiple Namespaces
+ */
+typedef struct _Discover0MBRForMultiNS {
+	uint16_t featureCode;           /* 0x0407 */
+	uint8_t minor_version   : 4;
+	uint8_t version         : 4;
+	uint8_t length;
+    uint8_t ans_c           : 1;
+    uint8_t reserved04      : 7;
+    uint8_t reserved05[11];
+} Discover0MBRForMultiNS;
+
 /** Union of features used to parse the discovery 0 response */
 union Discovery0Features {
     Discovery0TPerFeatures TPer;
@@ -461,6 +474,7 @@ union Discovery0Features {
 	Discovery0Ruby10 ruby10;
 	Discovery0DataRem dataRem;
 	Discovery0GeometryFeatures nsgeometry;
+    Discover0MBRForMultiNS mbrForMNS;
 };
 
 /** ComPacket (header) for transmissions. */
@@ -536,6 +550,7 @@ typedef struct _OPAL_DiskInfo {
 	uint8_t Pyrite20 : 1;
 	uint8_t Ruby10 : 1;
 	uint8_t DataRem : 1;
+    uint8_t MBRforMNS : 1;
     // values ONLY VALID IF FUNCTION ABOVE IS TRUE!!!!!
     uint8_t TPer_ACKNACK : 1;
     uint8_t TPer_async : 1;
@@ -622,6 +637,8 @@ typedef struct _OPAL_DiskInfo {
     uint32_t NSGeometry_logicalBlockSize;
     uint64_t NSGeometry_alignmentGranularity;
     uint64_t NSGeometry_lowestAlignedLBA;
+    uint8_t MBRforMNS_version;
+    uint8_t MBRforMNS_ANS_C : 1;
     // IDENTIFY information
     DTA_DEVICE_TYPE devType;
     uint8_t serialNum[20];
