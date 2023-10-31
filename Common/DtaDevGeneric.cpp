@@ -112,6 +112,7 @@ uint8NOCODE(loadDataStore, const char* password, const uint8_t table, const uint
             const uint32_t count, const char* filename)
 uint8NOCODE(readDataStore, const char* password, const uint8_t table, const uint32_t offset, const uint32_t count)
 uint8NOCODE(enableTperReset, const char* password, const uint8_t options)
+uint8NOCODE(clearDoneOnReset, const char* authority, const char* password, const uint8_t options)
 uint8NOCODE(getACE, const char* sp, const char* auth, const char* password, const uint32_t halfRow)
 uint8NOCODE(setACE, const char* sp, const char* auth, const char* password, const uint32_t halfRow, const char* expression)
 uint8NOCODE(getRandom, const char* sp, const char* auth, const char* password, const uint32_t size)

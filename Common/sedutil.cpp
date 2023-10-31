@@ -427,6 +427,9 @@ int main(int argc, char * argv[])
     case sedutiloption::enableTperReset:
         LOG(D) << "Enabling TPER_RESET";
         return d->enableTperReset(argv[opts.password], opts.lockingstate);
+    case sedutiloption::clearDoneOnReset:
+        LOG(D) << "Performing enable/disable MBR DoneOnReset";
+        return d->clearDoneOnReset(opts.authority[0] ? opts.authority : "Admin1", argv[opts.password], opts.lockingstate);
     case sedutiloption::tperReset:
         LOG(D) << "Performing TPER_RESET";
         return d->tperReset();

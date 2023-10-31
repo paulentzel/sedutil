@@ -1586,6 +1586,12 @@ uint8_t DtaDevEnterprise::enableTperReset(const char* password, const uint8_t op
     return 0xff;
 }
 
+uint8_t DtaDevEnterprise::clearDoneOnReset(const char* authority, const char* password, const uint8_t options)
+{
+    cout << "TCG Enterprise SSC does not include the clearDoneOnReset function.\n";
+    return 0xff;
+}
+
 uint8_t DtaDevEnterprise::getACE(const char* sp, const char* auth, const char* password,
                                  const uint32_t halfRow)
 {

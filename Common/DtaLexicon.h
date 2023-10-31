@@ -204,6 +204,7 @@ typedef enum _OPAL_TOKEN {
     // mbr control
     MBRENABLE = 0x01,
     MBRDONE = 0x02,
+    MBRDONEONRESET = 0x03,
 	// properties
 	HOSTPROPERTIES = 0x00,
     // tper info table

@@ -115,6 +115,8 @@ void usage()
 	printf("                                Write <file> to MBR Shadow area\n");
 	printf("--readMBR <Admin1password> <offset> <count> <device>\n");
 	printf("                                Print MBR data starting at offset for count bytes.\n");
+    printf("--clearDoneOnReset <Admin1password> <D|E> <device>\n");
+    printf("                                Enable or Disable clearing of MBR Done on TperReset, D = disable, E = enable\n");
 	printf("--loadDataStore <Admin1password> <table> <offset> <count> <file> <device>\n");
 	printf("                                Load data from a file into the Datastore table.\n");
 	printf("                                count is maxiumum bytes to write, 0 for whole file.\n");
@@ -546,6 +548,13 @@ uint8_t DtaOptions(int argc, char * argv[], DTA_OPTIONS * opts)
         BEGIN_OPTION(printDefaultPassword, 1) OPTION_IS(device) END_OPTION
 		BEGIN_OPTION(rawCmd, 7) i += 6; OPTION_IS(device) END_OPTION
         BEGIN_OPTION(enableTperReset, 3)
+            OPTION_IS(password)
+            TESTARG(D, lockingstate, OPAL_LOCKINGSTATE::DISABLERESET)
+            TESTARG(E, lockingstate, OPAL_LOCKINGSTATE::ENABLERESET)
+            TESTFAIL("Invalid option <D|E>")
+            OPTION_IS(device)
+            END_OPTION
+        BEGIN_OPTION(clearDoneOnReset, 3)
             OPTION_IS(password)
             TESTARG(D, lockingstate, OPAL_LOCKINGSTATE::DISABLERESET)
             TESTARG(E, lockingstate, OPAL_LOCKINGSTATE::ENABLERESET)

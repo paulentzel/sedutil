@@ -358,6 +358,7 @@ public:
 	uint8_t readDataStore(const char* password, const uint8_t table, const uint32_t offset,
 						  const uint32_t count);
     uint8_t enableTperReset(const char* password, const uint8_t options);
+    uint8_t clearDoneOnReset(const char* authority, const char* password, const uint8_t options);
     uint8_t getACE(const char* sp, const char* auth, const char* password, const uint32_t halfRow);
     uint8_t setACE(const char* sp, const char* auth, const char* password, const uint32_t halfRow,
                    const char* expression);

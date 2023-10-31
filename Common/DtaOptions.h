@@ -119,6 +119,7 @@ typedef enum _sedutiloption {
     setBandEnabled,
 	setMBREnable,
 	setMBRDone,
+    clearDoneOnReset,
 	enableuser,
 	activateLockingSP,
 	activateLockingSP_SUM,
