@@ -2741,17 +2741,60 @@ uint8_t DtaDevOpal::setACE(const char* sp, const char* authority, const char* pa
                                       (uint8_t)(halfRow >>  8),
                                       (uint8_t)(halfRow >>  0) };
 
+    // Parse the user expression.  Formats:
+    //    User6
+    //    "User1|User2|User4"
+    //    "Admins|User0" (User0 is Users)
     std::vector<uint8_t> userVec;
-    if ((lastRC = getAuth4User(spuid, user, 0, userVec)) != 0) {
-        LOG(E) << "Invalid user provided " << user;
-        return lastRC;
-    }
+    std::vector<uint8_t> expression = {OPAL_TOKEN::STARTLIST};
+    char bool_operator = 3;
 
-    std::vector<uint8_t> expression = {OPAL_TOKEN::STARTLIST,
-                                       OPAL_TOKEN::STARTNAME,
-                                       OPAL_SHORT_ATOM::BYTESTRING4, 0x00, 0x00, 0x0C, 0x05 };
-    expression.insert(expression.end(), userVec.begin(), userVec.end());
-    expression.push_back(OPAL_TOKEN::ENDNAME);
+    for (const char * ptr = user; *ptr != '\0';) {
+        userVec.clear();
+        if ((lastRC = getAuth4User(spuid, ptr, 0, userVec)) != 0) {
+            LOG(E) << "Invalid user provided " << user;
+            return lastRC;
+        }
+        expression.push_back(OPAL_TOKEN::STARTNAME);
+        expression.push_back(OPAL_SHORT_ATOM::BYTESTRING4);
+        expression.push_back(0x00);
+        expression.push_back(0x00);
+        expression.push_back(0x0C);
+        expression.push_back(0x05);
+        expression.insert(expression.end(), userVec.begin(), userVec.end());
+        expression.push_back(OPAL_TOKEN::ENDNAME);
+
+        if (bool_operator <= 2) {
+            expression.push_back(OPAL_TOKEN::STARTNAME);
+            expression.push_back(OPAL_SHORT_ATOM::BYTESTRING4);
+            expression.push_back(0x00);
+            expression.push_back(0x00);
+            expression.push_back(0x04);
+            expression.push_back(0x0E);
+            expression.push_back(bool_operator);
+            expression.push_back(OPAL_TOKEN::ENDNAME);
+            bool_operator = 3;
+        }
+
+        while (1) {
+            if (*ptr == '&') {
+                bool_operator = 0;
+                ++ptr;
+                break;
+            } else if (*ptr == '|') {
+                bool_operator = 1;
+                ++ptr;
+                break;
+            } else if (*ptr == '!') {
+                bool_operator = 2;
+                ++ptr;
+                break;
+            } else if (*ptr == '\0') {
+                break;
+            }
+            ++ptr;
+        }
+    }
     expression.push_back(OPAL_TOKEN::ENDLIST);
 
     session = new DtaSession(this);
