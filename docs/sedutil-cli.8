@@ -132,7 +132,7 @@ Send a STACK_RESET for the base ComID.
 .IP "\-\-getACE <halfUID> <password> <device>"
 Print the ACE table boolean expression for the row specified by the halfUID value (lower half of row UID). Default SP is Locking, over-ride with -sp option.  Default authority is Admin1, over-ride with -a option.
 .IP "\-\-setACE <halfUID> <expression> <password> <device>"
-Set the ACE table boolean expression (UID) for the row specified by the halfUID value (lower half of row UID). Expression is Anybody, SID, PSID, Admins, Admin[1..n], User[1..n]. Default SP is Locking, over-ride with -sp option.  Default authority is Admin1, over-ride with -a option.
+Set the ACE table boolean expression (UID) for the row specified by the halfUID value (lower half of row UID). Expression is Anybody, SID, PSID, Admins, Admin[1..n], User[1..n] or combination (i.e. "User1|User2"). Default SP is Locking, over-ride with -sp option.  Default authority is Admin1, over-ride with -a option.
 .IP "\-\-getRandom <size> <password> <device>"
 Get a random number of <size> bytes.  Default SP is Admin, over-ride with -sp option.  Default authority is Anybody (password is ignored), over-ride with -a option.
 .IP "\-\-featureLock <column> <value> <password> <device>"
