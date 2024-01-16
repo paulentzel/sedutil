@@ -164,15 +164,17 @@ if((x+baseOptions) != argc) { \
 #define END_OPTION }
 /** test an argument for a value */
 #define TESTARG(literal,structfield,value) \
-				if (!(strcasecmp(#literal, argv[i + 1]))) \
-					{opts->structfield = value;} else
+				if (!(strcasecmp(#literal, argv[i + 1]))) { \
+					opts->structfield = value; \
+				} \
+				else
 /** if all testargs fail then do this */
 #define TESTFAIL(msg) \
-	{ \
-	LOG(E) << msg << " " << argv[i+1]; \
-	return 1;\
-	} \
-    i++;
+				{ \
+					LOG(E) << msg << " " << argv[i+1]; \
+					return 1;\
+				} \
+				i++;
 
 #define TESTARG_RANGE(structfield, minValue, maxValue, errorStr) \
     opts->structfield = static_cast<uint8_t>(atoi(argv[i + 1])); \
