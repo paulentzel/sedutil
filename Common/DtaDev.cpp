@@ -219,6 +219,24 @@ uint8_t DtaDev::stackReset()
     uint16_t comId = 0;
     uint16_t comIdExtension = 0;
     GetExtendedComID(&comId, &comIdExtension);
+
+    // Send a Security Receive command to the target for just the ComPacket header
+    uint8_t lastRC;
+    if ((lastRC = sendCmd(IF_RECV, 0x01, comId, bufferPtr, sizeof(OPALComPacket))) != 0) {
+        LOG(D) << "Send Security Receive response request to device failed " << (uint16_t)lastRC;
+    } else {
+        IFLOG(D3) DtaHexDump(bufferPtr, sizeof(OPALComPacket));
+        OPALComPacket* comPacketHdr = static_cast<OPALComPacket*>(bufferPtr);
+        uint16_t tperComId          = (comPacketHdr->extendedComID[0] << 8) | comPacketHdr->extendedComID[1];
+        uint16_t tperComIdExtension = (comPacketHdr->extendedComID[2] << 8) | comPacketHdr->extendedComID[3];
+        if (tperComId == comId) {
+            if (tperComIdExtension != 0xFFFF) {
+                comIdExtension = tperComIdExtension;
+                LOG(I) << "comID extension set to " << std::hex << comIdExtension;
+            }
+        }
+    }
+
     StackResetRequest_t* reqPtr = static_cast<StackResetRequest_t*>(bufferPtr);
     reqPtr->comID = SWAP16(comId);
     reqPtr->extendedComID = SWAP16(comIdExtension);
@@ -226,12 +244,13 @@ uint8_t DtaDev::stackReset()
 
     LOG(I) << "Sending STACK_RESET for comID " << std::hex << comId;
 
-	uint8_t lastRC;
     if ((lastRC = sendCmd(IF_SEND, 0x02, comId, bufferPtr, sizeof(StackResetRequest_t))) != 0) {
         LOG(D) << "Send STACK_RESET command request to device failed " << (uint16_t)lastRC;
         DtaHexDump(bufferPtr, sizeof(StackResetRequest_t));
         return lastRC;
     }
+    IFLOG(D3) DtaHexDump(bufferPtr, sizeof(StackResetRequest_t));
+
     if ((lastRC = sendCmd(IF_RECV, 0x02, comId, bufferPtr, MIN_BUFFER_LENGTH)) != 0) {
         LOG(D) << "Send STACK_RESET response request to device failed " << (uint16_t)lastRC;
         return lastRC;
@@ -246,6 +265,8 @@ uint8_t DtaDev::stackReset()
         DtaHexDump(bufferPtr, sizeof(StackResetResponse_t));
         return 1;
     }
+    IFLOG(D3) DtaHexDump(bufferPtr, sizeof(StackResetResponse_t));
+
     if (retStatus != 0) {
         LOG(W) << "STACK_RESET Failed, status = " << retStatus;
         return retStatus;
