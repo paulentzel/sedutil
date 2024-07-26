@@ -141,6 +141,7 @@ typedef enum _sedutiloption {
     enableTperReset,
     tperReset,
     stackReset,
+    verifyComIdValid,
     getACE,
     setACE,
     getRandom,

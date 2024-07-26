@@ -461,6 +461,10 @@ public:
      */
     uint8_t stackReset();
 
+    /** Issues VERIFY_COMID_VALID to the device
+     */
+    uint8_t verifyComID();
+
 	/*
 	* virtual functions required to be implemented
 	* because they are called by DtaSession.cpp
