@@ -230,6 +230,11 @@ uint8_t DtaOptions(int argc, char * argv[], DTA_OPTIONS * opts)
             baseOptions += 1;
             opts->useTransaction = true;
         }
+        else if (!strcmp("-xa", argv[i])) {
+            baseOptions += 1;
+            opts->useTransaction = true;
+            opts->abort = true;
+        }
         else if (!strcmp("-ro", argv[i])) {
             baseOptions += 1;
             opts->useReadOnlySession = true;

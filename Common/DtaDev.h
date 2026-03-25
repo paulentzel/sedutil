@@ -492,6 +492,7 @@ public:
     bool testTimeout = false;
     bool testOversizePacket = false;
     bool useTransaction = false;
+    bool abort = false;
     bool useReadOnlySession = false;
     bool useSessionTimeout = false;
     uint16_t ComIDValue = 0;

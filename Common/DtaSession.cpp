@@ -397,7 +397,11 @@ DtaSession::~DtaSession()
             if (d->useTransaction) {
                 cmd->reset();
                 cmd->addToken(OPAL_TOKEN::ENDTRANSACTON);
-                cmd->addToken((uint64_t)0);
+                if ((d->abort)) {
+                    cmd->addToken((uint64_t)1);
+                } else {
+                    cmd->addToken((uint64_t)0);
+                }
                 cmd->complete(0);
                 if (sendCommand(cmd, response)) {
                     LOG(E) << "End Transaction Failed";

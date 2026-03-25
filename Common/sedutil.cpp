@@ -111,6 +111,7 @@ int main(int argc, char * argv[])
         d->delay              = opts.delay;
         d->testOversizePacket = opts.testOversizePacket;
         d->useTransaction     = opts.useTransaction;
+        d->abort              = opts.abort;
         d->useReadOnlySession = opts.useReadOnlySession;
         d->useSessionTimeout  = opts.useSessionTimeout;
         d->sendRetries        = opts.sendRetries;
