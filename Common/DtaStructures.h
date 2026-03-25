@@ -42,6 +42,35 @@ along with sedutil.  If not, see <http://www.gnu.org/licenses/>.
 #define FC_NSGEOMETRY 0x0405	/* Namespace Geometry Reporting */
 #define FC_MBRFORMNS  0x0407    /* Shadow MBR for Multiple Namespaces */
 
+/** VERIFY_COMID_VALID Request
+ */
+typedef struct _VerifyComIdRequest {
+    uint16_t comID;
+    uint16_t extendedComID;
+    uint32_t requestCode;
+} VerifyComIdRequest_t;
+
+#define VERIFY_COMID_VALID_REQUEST_CODE 0x00000001
+
+#define COMID_STATE_INVALID     0
+#define COMID_STATE_INACTIVE    1
+#define COMID_STATE_ISSUED      2
+#define COMID_STATE_ASSOCIATED  3
+
+/** STACK_RESET Response
+ */
+typedef struct _VerifyComIdResponse {
+    uint16_t comID;
+    uint16_t extendedComID;
+    uint32_t requestCode;
+    uint16_t reserved;
+    uint16_t length;
+    uint32_t state;
+    uint8_t  allocationTime[10];
+    uint8_t  expiryTime[10];
+    uint8_t  TimeSinceReset[10];
+} VerifyComIdResponse_t;
+
 /** STACK_RESET Request
  */
 typedef struct _StackResetRequest {

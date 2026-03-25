@@ -436,6 +436,9 @@ int main(int argc, char * argv[])
     case sedutiloption::stackReset:
         LOG(D) << "Performing STACK_RESET";
         return d->stackReset();
+    case sedutiloption::verifyComIdValid:
+        LOG(D) << "Performing VERIFY_COMID_VALID";
+        return d->verifyComID();
     case sedutiloption::getACE:
         LOG(D) << "Performing getACE";
         return d->getACE(opts.sp[0] ? opts.sp : "Locking",

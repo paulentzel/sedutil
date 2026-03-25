@@ -165,7 +165,9 @@ void usage()
     printf("--tperReset <device>\n");
     printf("                                Send TPER_RESET to device\n");
     printf("--stackReset <device>\n");
-    printf("                                Send a STACK_RESET for the base ComID\n");
+    printf("                                Send a STACK_RESET for the base ComID, over-ride with the -c option\n");
+    printf("--verifyComIDValid <device>\n");
+    printf("                                Send a VERIFY_COMID_VALID for the base ComID, over-ride with the -c option\n");
     printf("--getRandom <size> <password> <device>\n");
     printf("                                Generate a random byte sequence of <size> bytes\n");
     printf("                                Default SP is Admin, default authority is Anybody\n");
@@ -563,6 +565,7 @@ uint8_t DtaOptions(int argc, char * argv[], DTA_OPTIONS * opts)
             END_OPTION
         BEGIN_OPTION(tperReset, 1) OPTION_IS(device) END_OPTION
         BEGIN_OPTION(stackReset, 1) OPTION_IS(device) END_OPTION
+        BEGIN_OPTION(verifyComIdValid, 1) OPTION_IS(device) END_OPTION
         BEGIN_OPTION(getACE, 3)
             OPTION_IS(offset)
             OPTION_IS(password)
